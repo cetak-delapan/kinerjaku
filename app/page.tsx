@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import PerformanceChart from "@/app/components/PerformanceChart";
+
 export const dynamic = "force-dynamic";
 
 export default async function Home(){
@@ -228,81 +228,6 @@ task_breakdowns(
 
 
 
-
-
-// ======================
-// GRAFIK BULANAN
-// ======================
-
-
-const {data:monthlyActivities}=await supabase
-
-.from("activities")
-
-.select("tanggal");
-
-
-
-const monthlyData = [
-
-"Jan",
-"Feb",
-"Mar",
-"Apr",
-"Mei",
-"Jun",
-"Jul",
-"Agu",
-"Sep",
-"Okt",
-"Nov",
-"Des"
-
-].map((bulan,index)=>{
-
-
-const jumlah =
-
-monthlyActivities?.filter(item=>{
-
-
-const date =
-new Date(item.tanggal);
-
-
-
-return date.getMonth()===index;
-
-
-}).length || 0;
-
-
-
-return {
-
-bulan,
-
-jumlah
-
-};
-
-
-});
-
-
-
-
-
-return (
-
-<main className="
-p-5
-pb-32
-max-w-xl
-mx-auto
-">
-
-
 <h1 className="
 text-3xl
 font-bold
@@ -392,29 +317,6 @@ value={`${progress}%`}
 
 
 </div>
-
-
-
-
-
-
-{/* GRAFIK */}
-
-<div className="
-mt-8
-">
-
-
-<PerformanceChart
-
-data={monthlyData}
-
-/>
-
-
-</div>
-
-
 
 
 
