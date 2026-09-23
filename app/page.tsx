@@ -636,7 +636,7 @@ font-semibold
 mt-1
 ">
 
-{item.tasks?.uraian_tugas}
+{item.tasks?.[0]?.uraian_tugas}
 
 </h3>
 
@@ -647,7 +647,7 @@ text-blue-600
 text-sm
 ">
 
-{item.task_breakdowns?.nama_bukti}
+{item.task_breakdowns?.[0]?.nama_bukti}
 
 </p>
 
