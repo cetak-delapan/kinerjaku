@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
+
 export default async function Home(){
 
 
@@ -77,9 +78,15 @@ const {data:tasks}=await supabase
 
 
 const totalTarget =
+
 tasks?.reduce(
-(sum,item)=>sum+(item.target || 0),
+
+(sum,item)=>
+
+sum + (item.target || 0),
+
 0
+
 ) || 0;
 
 
@@ -99,12 +106,15 @@ const {count:realization}=await supabase
 
 
 const progress =
+
 totalTarget > 0
 
 ?
 
 Math.round(
-((realization || 0)/totalTarget)*100
+
+((realization || 0) / totalTarget) * 100
+
 )
 
 :
@@ -116,7 +126,7 @@ Math.round(
 
 
 // ======================
-// PROGRESS PER URAIAN
+// PROGRESS PER TUGAS
 // ======================
 
 const {data:taskProgress}=await supabase
@@ -142,12 +152,14 @@ id
 
 
 
+
 const progressData = taskProgress
 
 ?.map(task=>{
 
 
 const realisasi =
+
 task.activities?.length || 0;
 
 
@@ -197,10 +209,10 @@ persen
 
 
 
+
 // ======================
 // AKTIVITAS TERBARU
 // ======================
-
 
 const {data:recentActivities}=await supabase
 
@@ -213,11 +225,11 @@ id,
 tanggal,
 
 tasks(
-    uraian_tugas
+uraian_tugas
 ),
 
 task_breakdowns(
-    nama_bukti
+nama_bukti
 )
 
 `)
@@ -228,11 +240,31 @@ task_breakdowns(
 
 
 
-<h1 className="
+
+
+return (
+
+<main
+
+className="
+p-5
+pb-32
+max-w-xl
+mx-auto
+"
+
+>
+
+
+<h1
+
+className="
 text-3xl
 font-bold
 mb-6
-">
+"
+
+>
 
 KinerjaKu
 
@@ -241,7 +273,6 @@ KinerjaKu
 
 
 
-{/* BUTTON TAMBAH */}
 
 <a
 
@@ -268,13 +299,16 @@ mb-6
 
 
 
-{/* CARD */}
 
-<div className="
+<div
+
+className="
 grid
 grid-cols-2
 gap-4
-">
+"
+
+>
 
 
 <Card
@@ -322,18 +356,20 @@ value={`${progress}%`}
 
 
 
-{/* PROGRESS SKP */}
-
-<div className="
-mt-8
-">
 
 
-<h2 className="
+<div className="mt-8">
+
+
+<h2
+
+className="
 text-xl
 font-bold
 mb-4
-">
+"
+
+>
 
 Progress SKP
 
@@ -342,12 +378,12 @@ Progress SKP
 
 
 
-<div className="
-space-y-4
-">
+
+<div className="space-y-4">
 
 
 {
+
 
 progressData?.map((item,index)=>(
 
@@ -367,18 +403,25 @@ shadow-sm
 >
 
 
-<div className="
+<div
+
+className="
 flex
 justify-between
-gap-3
 mb-3
-">
+"
+
+>
 
 
-<p className="
+<p
+
+className="
 font-semibold
 text-sm
-">
+"
+
+>
 
 {item.nama}
 
@@ -386,10 +429,14 @@ text-sm
 
 
 
-<span className="
+<span
+
+className="
 text-blue-600
 font-bold
-">
+"
+
+>
 
 {item.persen}%
 
@@ -401,12 +448,16 @@ font-bold
 
 
 
-<div className="
+<div
+
+className="
 w-full
 bg-gray-200
 rounded-full
 h-3
-">
+"
+
+>
 
 
 <div
@@ -431,15 +482,20 @@ width:`${item.persen}%`
 
 
 
-<p className="
+<p
+
+className="
 text-xs
 text-gray-500
 mt-2
-">
+"
+
+>
 
 {item.realisasi} / {item.target} selesai
 
 </p>
+
 
 
 </div>
@@ -451,15 +507,15 @@ mt-2
 
 
 
+
+
 {
 
 (!progressData || progressData.length===0)
 
 &&
 
-<p className="
-text-gray-500
-">
+<p className="text-gray-500">
 
 Belum ada aktivitas
 
@@ -468,29 +524,31 @@ Belum ada aktivitas
 }
 
 
-</div>
-
 
 </div>
 
 
+</div>
 
 
 
 
 
-{/* AKTIVITAS TERBARU */}
-
-<div className="
-mt-8
-">
 
 
-<h2 className="
+
+<div className="mt-8">
+
+
+<h2
+
+className="
 text-xl
 font-bold
 mb-4
-">
+"
+
+>
 
 Aktivitas Terbaru
 
@@ -498,12 +556,13 @@ Aktivitas Terbaru
 
 
 
-<div className="
-space-y-3
-">
+
+
+<div className="space-y-3">
 
 
 {
+
 
 recentActivities?.map((item)=>(
 
@@ -522,10 +581,14 @@ p-4
 >
 
 
-<p className="
+<p
+
+className="
 text-sm
 text-gray-500
-">
+"
+
+>
 
 {item.tanggal}
 
@@ -533,10 +596,15 @@ text-gray-500
 
 
 
-<h3 className="
+
+<h3
+
+className="
 font-semibold
 mt-1
-">
+"
+
+>
 
 {item.tasks?.[0]?.uraian_tugas}
 
@@ -544,14 +612,21 @@ mt-1
 
 
 
-<p className="
+
+
+<p
+
+className="
 text-blue-600
 text-sm
-">
+"
+
+>
 
 {item.task_breakdowns?.[0]?.nama_bukti}
 
 </p>
+
 
 
 </div>
@@ -559,13 +634,33 @@ text-sm
 
 ))
 
+
 }
 
 
+
+{
+
+(!recentActivities || recentActivities.length===0)
+
+&&
+
+<p className="text-gray-500">
+
+Belum ada aktivitas
+
+</p>
+
+}
+
+
+
 </div>
 
 
 </div>
+
+
 
 
 
@@ -610,10 +705,14 @@ border
 >
 
 
-<p className="
+<p
+
+className="
 text-gray-500
 text-sm
-">
+"
+
+>
 
 {title}
 
@@ -621,11 +720,16 @@ text-sm
 
 
 
-<h2 className="
+
+<h2
+
+className="
 text-2xl
 font-bold
 mt-2
-">
+"
+
+>
 
 {value}
 
