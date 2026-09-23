@@ -1,9 +1,21 @@
 import { supabase } from "@/lib/supabase";
+import { getAuthSession } from "@/lib/auth";
+import {
+  CalendarDays,
+  FileCheck,
+  Activity,
+  Target
+} from "lucide-react";
+
 
 export const revalidate = 30;
 
 
+
 export default async function Home(){
+
+const session = await getAuthSession();
+
 
 
 const today = new Date()
@@ -22,6 +34,7 @@ firstDay.toISOString().split("T")[0];
 
 
 
+
 // ======================
 // AKTIVITAS HARI INI
 // ======================
@@ -33,6 +46,7 @@ const {count:todayCount}=await supabase
 .select("*",{count:"exact",head:true})
 
 .eq("tanggal",today);
+
 
 
 
@@ -52,6 +66,7 @@ const {count:monthCount}=await supabase
 
 
 
+
 // ======================
 // TOTAL BUKTI
 // ======================
@@ -61,6 +76,7 @@ const {count:evidenceCount}=await supabase
 .from("evidences")
 
 .select("*",{count:"exact",head:true});
+
 
 
 
@@ -83,7 +99,7 @@ tasks?.reduce(
 
 (sum,item)=>
 
-sum + (item.target || 0),
+sum+(item.target || 0),
 
 0
 
@@ -94,7 +110,7 @@ sum + (item.target || 0),
 
 
 // ======================
-// TOTAL REALISASI
+// REALISASI
 // ======================
 
 const {count:realization}=await supabase
@@ -102,6 +118,7 @@ const {count:realization}=await supabase
 .from("activities")
 
 .select("*",{count:"exact",head:true});
+
 
 
 
@@ -120,6 +137,7 @@ Math.round(
 :
 
 0;
+
 
 
 
@@ -214,6 +232,7 @@ persen
 // AKTIVITAS TERBARU
 // ======================
 
+
 const {data:recentActivities}=await supabase
 
 .from("activities")
@@ -242,6 +261,7 @@ nama_bukti
 
 
 
+
 return (
 
 <main
@@ -256,19 +276,129 @@ mx-auto
 >
 
 
+
+<div
+
+className="
+bg-gradient-to-r
+from-blue-600
+to-blue-500
+rounded-3xl
+p-6
+text-white
+mb-6
+shadow-lg
+"
+
+>
+
+
+<div
+
+className="
+flex
+items-center
+gap-4
+"
+
+>
+
+
+<img
+
+src={
+session?.user?.image ||
+"https://ui-avatars.com/api/?name=User"
+}
+
+className="
+w-14
+h-14
+rounded-full
+border-2
+border-white
+object-cover
+"
+
+/>
+
+
+
+<div>
+
+
+<p
+
+className="
+text-sm
+opacity-90
+"
+
+>
+
+Selamat datang 👋
+
+</p>
+
+
+
 <h1
 
 className="
-text-3xl
+text-xl
 font-bold
-mb-6
+"
+
+>
+
+{session?.user?.name || "Pengguna"}
+
+</h1>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+<p
+
+className="
+mt-5
+text-sm
+opacity-90
 "
 
 >
 
 KinerjaKu
 
-</h1>
+</p>
+
+
+
+
+<p
+
+className="
+text-xs
+opacity-80
+"
+
+>
+
+Pantau aktivitas dan progres SKP Anda
+
+</p>
+
+
+
+</div>
+
 
 
 
@@ -300,6 +430,7 @@ mb-6
 
 
 
+
 <div
 
 className="
@@ -311,47 +442,73 @@ gap-4
 >
 
 
-<Card
+<StatCard
 
 title="Hari Ini"
 
-value={`${todayCount || 0} aktivitas`}
+value={todayCount || 0}
+
+label="Aktivitas"
+
+icon={CalendarDays}
+
+color="blue"
 
 />
 
 
 
-<Card
+
+<StatCard
 
 title="Bukti"
 
-value={`${evidenceCount || 0} file`}
+value={evidenceCount || 0}
+
+label="File"
+
+icon={FileCheck}
+
+color="green"
 
 />
 
 
 
-<Card
+
+<StatCard
 
 title="Bulan Ini"
 
-value={`${monthCount || 0} aktivitas`}
+value={monthCount || 0}
+
+label="Aktivitas"
+
+icon={Activity}
+
+color="purple"
 
 />
 
 
 
-<Card
+
+<StatCard
 
 title="Progress"
 
-value={`${progress}%`}
+value={progress}
+
+label="%"
+
+icon={Target}
+
+color="orange"
 
 />
 
 
 </div>
-
 
 
 
@@ -378,12 +535,10 @@ Progress SKP
 
 
 
-
 <div className="space-y-4">
 
 
 {
-
 
 progressData?.map((item,index)=>(
 
@@ -394,10 +549,11 @@ key={index}
 
 className="
 bg-white
-border
-rounded-2xl
-p-4
+rounded-3xl
+p-5
 shadow-sm
+border
+border-gray-100
 "
 
 >
@@ -408,16 +564,21 @@ shadow-sm
 className="
 flex
 justify-between
-mb-3
+items-start
+mb-4
 "
 
 >
+
+
+<div>
 
 
 <p
 
 className="
 font-semibold
+text-gray-800
 text-sm
 "
 
@@ -429,18 +590,19 @@ text-sm
 
 
 
-<span
+<p
 
 className="
-text-blue-600
-font-bold
+text-xs
+text-gray-500
+mt-1
 "
 
 >
 
-{item.persen}%
+{item.realisasi} dari {item.target} selesai
 
-</span>
+</p>
 
 
 </div>
@@ -448,13 +610,84 @@ font-bold
 
 
 
+
+<span
+
+className={`
+
+text-xs
+
+font-semibold
+
+px-3
+
+py-1
+
+rounded-full
+
+${
+
+item.persen >= 100
+
+?
+
+"bg-green-100 text-green-700"
+
+:
+
+item.persen >= 50
+
+?
+
+"bg-blue-100 text-blue-700"
+
+:
+
+"bg-yellow-100 text-yellow-700"
+
+}
+
+`}
+
+>
+
+{
+
+item.persen >= 100
+
+?
+
+"Selesai"
+
+:
+
+item.persen >= 50
+
+?
+
+"Berjalan"
+
+:
+
+"Mulai"
+
+}
+
+</span>
+
+
+
+</div>
+// progress bar
+
 <div
 
 className="
 w-full
-bg-gray-200
+bg-gray-100
 rounded-full
 h-3
+overflow-hidden
 "
 
 >
@@ -462,11 +695,31 @@ h-3
 
 <div
 
-className="
-bg-blue-600
+className={`
+
 h-3
+
 rounded-full
-"
+
+transition-all
+
+duration-700
+
+${
+
+item.persen >= 100
+
+?
+
+"bg-green-500"
+
+:
+
+"bg-blue-600"
+
+}
+
+`}
 
 style={{
 
@@ -482,19 +735,32 @@ width:`${item.persen}%`
 
 
 
-<p
+
+<div
 
 className="
-text-xs
-text-gray-500
+text-right
 mt-2
 "
 
 >
 
-{item.realisasi} / {item.target} selesai
 
-</p>
+<span
+
+className="
+font-bold
+text-blue-600
+"
+
+>
+
+{item.persen}%
+
+</span>
+
+
+</div>
 
 
 
@@ -503,23 +769,30 @@ mt-2
 
 ))
 
+
 }
-
-
 
 
 
 {
 
+
 (!progressData || progressData.length===0)
 
 &&
 
-<p className="text-gray-500">
+<p
+
+className="
+text-gray-500
+"
+
+>
 
 Belum ada aktivitas
 
 </p>
+
 
 }
 
@@ -537,7 +810,17 @@ Belum ada aktivitas
 
 
 
-<div className="mt-8">
+
+{/* AKTIVITAS TERBARU */}
+
+
+<div
+
+className="
+mt-8
+"
+
+>
 
 
 <h2
@@ -557,8 +840,13 @@ Aktivitas Terbaru
 
 
 
+<div
 
-<div className="space-y-3">
+className="
+space-y-3
+"
+
+>
 
 
 {
@@ -573,9 +861,22 @@ key={item.id}
 
 className="
 bg-white
+rounded-3xl
 border
-rounded-2xl
-p-4
+border-gray-100
+p-5
+shadow-sm
+"
+
+>
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
 "
 
 >
@@ -596,12 +897,29 @@ text-gray-500
 
 
 
+<div
+
+className="
+w-2
+h-2
+rounded-full
+bg-blue-600
+"
+
+></div>
+
+
+</div>
+
+
+
+
 
 <h3
 
 className="
 font-semibold
-mt-1
+mt-3
 "
 
 >
@@ -619,6 +937,7 @@ mt-1
 className="
 text-blue-600
 text-sm
+mt-2
 "
 
 >
@@ -639,17 +958,25 @@ text-sm
 
 
 
+
 {
 
 (!recentActivities || recentActivities.length===0)
 
 &&
 
-<p className="text-gray-500">
+<p
+
+className="
+text-gray-500
+"
+
+>
 
 Belum ada aktivitas
 
 </p>
+
 
 }
 
@@ -675,34 +1002,112 @@ Belum ada aktivitas
 
 
 
-function Card({
+
+
+function StatCard({
 
 title,
 
-value
+value,
+
+label,
+
+icon:Icon,
+
+color
 
 }:{
 
 title:string,
 
-value:string
+value:number,
+
+label:string,
+
+icon:any,
+
+color:string
 
 }){
 
 
+const colors:any={
+
+
+blue:
+
+"bg-blue-100 text-blue-600",
+
+
+
+green:
+
+"bg-green-100 text-green-600",
+
+
+
+purple:
+
+"bg-purple-100 text-purple-600",
+
+
+
+orange:
+
+"bg-orange-100 text-orange-600"
+
+
+
+};
+
+
+
 return (
+
 
 <div
 
 className="
 bg-white
-rounded-2xl
+rounded-3xl
 p-5
 shadow-sm
 border
+border-gray-100
 "
 
 >
+
+
+<div
+
+className={`
+
+w-11
+
+h-11
+
+rounded-2xl
+
+flex
+
+items-center
+
+justify-center
+
+mb-4
+
+${colors[color]}
+
+`}
+
+>
+
+<Icon size={22}/>
+
+</div>
+
+
 
 
 <p
@@ -721,12 +1126,24 @@ text-sm
 
 
 
+
+<div
+
+className="
+flex
+items-end
+gap-1
+mt-2
+"
+
+>
+
+
 <h2
 
 className="
-text-2xl
+text-3xl
 font-bold
-mt-2
 "
 
 >
@@ -737,8 +1154,30 @@ mt-2
 
 
 
+
+<span
+
+className="
+text-gray-500
+mb-1
+"
+
+>
+
+{label}
+
+</span>
+
+
+
 </div>
 
+
+
+</div>
+
+
 )
+
 
 }
