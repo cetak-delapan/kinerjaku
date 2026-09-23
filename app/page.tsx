@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 
 export default async function Home(){
