@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import PerformanceChart from "@/app/components/PerformanceChart";
-
+export const dynamic = "force-dynamic";
 
 export default async function Home(){
 
